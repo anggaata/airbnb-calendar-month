@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airbnb Two Month Calendar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .calendar-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .calendar {
+            width: 300px;
+        }
+        .month-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .days-header, .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+        }
+        .days-header {
+            font-weight: bold;
+        }
+        .day {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .selected {
+            background-color: black!important;
+            color: white;
+        }
+        .range {
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 0;
+            padding: 10px 0;
+            margin: 0;
+            display: block;
+        }
+
+        .day.selected {
+            background-color: black!important;
+            color: white;
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .range.start {
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+        }
+
+        .range.end {
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+
+
+    </style>
+</head>
+<body>
+
+<h2>Kalender Custom</h2>
+<div class="calendar-container">
+    <div class="calendar" id="marchCalendar">
+        <div class="month-title">Maret 2025</div>
+        <div class="days-header">
+            <div>Min</div> <div>Sen</div> <div>Sel</div> <div>Rab</div> <div>Kam</div> <div>Jum</div> <div>Sab</div>
+        </div>
+        <div class="days" id="marchDays"></div>
+    </div>
+
+    <div class="calendar" id="aprilCalendar">
+        <div class="month-title">April 2025</div>
+        <div class="days-header">
+            <div>Min</div> <div>Sen</div> <div>Sel</div> <div>Rab</div> <div>Kam</div> <div>Jum</div> <div>Sab</div>
+        </div>
+        <div class="days" id="aprilDays"></div>
+    </div>
+</div>
+
+<script>
+    const marchDays = document.getElementById("marchDays");
+    const aprilDays = document.getElementById("aprilDays");
+
+    function generateCalendar(daysElement, month, year, startDay) {
+        daysElement.innerHTML = "";
+        for (let i = 0; i < startDay; i++) {
+            let emptyDiv = document.createElement("div");
+            daysElement.appendChild(emptyDiv);
+        }
+        let totalDays = new Date(year, month, 0).getDate();
+        for (let day = 1; day <= totalDays; day++) {
+            let dayDiv = document.createElement("div");
+            dayDiv.classList.add("day");
+            dayDiv.textContent = day;
+            dayDiv.dataset.date = `${year}-${month}-${day}`;
+            dayDiv.addEventListener("click", selectDate);
+            daysElement.appendChild(dayDiv);
+        }
+    }
+
+    let selectedDates = [];
+
+    function selectDate(event) {
+        let selectedDay = event.target;
+        let selectedDate = selectedDay.dataset.date;
+
+        if (selectedDates.length === 2) {
+            selectedDates = [];
+        }
+
+        selectedDates.push(selectedDate);
+        updateSelection();
+    }
+
+    function updateSelection() {
+        document.querySelectorAll(".day").forEach(day => {
+            day.classList.remove("selected", "range", "start", "end");
+        });
+
+        if (selectedDates.length > 0) {
+            document.querySelector(`[data-date="${selectedDates[0]}"]`).classList.add("selected", "range", "start");
+        }
+        if (selectedDates.length > 1) {
+            document.querySelector(`[data-date="${selectedDates[1]}"]`).classList.add("selected", "range", "end");
+
+            let [start, end] = selectedDates.map(d => new Date(d)).sort((a, b) => a - b);
+
+            document.querySelectorAll(".day").forEach(day => {
+                let current = new Date(day.dataset.date);
+                if (current >= start && current <= end) {
+                    day.classList.add("range");
+                }
+            });
+        }
+    }
+
+    generateCalendar(marchDays, 3, 2025, 6);
+    generateCalendar(aprilDays, 4, 2025, 2); 
+</script>
+
+</body>
+</html>
